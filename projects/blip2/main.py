@@ -57,6 +57,7 @@ def explain_answer():
 
 
 def main():
+    print("starting with the program")
     raw_image = get_image()
     image = load_model_with_preprocessors(raw_image)
     generate_response()
