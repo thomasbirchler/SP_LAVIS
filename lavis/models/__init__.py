@@ -55,6 +55,7 @@ from lavis.processors.base_processor import BaseProcessor
 
 
 __all__ = [
+    "load_model_and_preprocess",
     "load_model",
     "AlbefClassification",
     "AlbefFeatureExtractor",
