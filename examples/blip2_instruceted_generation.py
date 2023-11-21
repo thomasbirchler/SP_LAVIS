@@ -10,8 +10,10 @@ def main():
         # !pip install salesforce-lavis
 
     # Load an example image
-    img_url = 'https://storage.googleapis.com/sfr-vision-language-research/LAVIS/assets/merlion.png'
-    raw_image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
+    # img_url = 'https://storage.googleapis.com/sfr-vision-language-research/LAVIS/assets/merlion.png'
+    img_url = "../docs/_static/merlion.png"
+    # raw_image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
+    raw_image = Image.open(img_url).convert('RGB')
 
     # setup device to use
     device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
