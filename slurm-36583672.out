@@ -1,0 +1,4 @@
+  File "./projects/blip2/TestFile.py", line 13
+    file.write(f"{x[i]}**2 = {y[i]}; ")
+                                     ^
+SyntaxError: invalid syntax

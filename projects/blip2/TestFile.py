@@ -10,4 +10,4 @@ y = x ** 2
 # Save squared number into a file
 with open('squared_numbers.txt', 'w') as file:
     for i in range(len(x)):
-        file.write(f"{x[i]}^2 = {y[i]}\n")
+        file.write(f"{x[i]}**2 = {y[i]}; ")
