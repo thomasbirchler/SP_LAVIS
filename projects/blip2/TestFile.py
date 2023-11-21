@@ -6,6 +6,12 @@ def main_function():
     # Create an array of numbers from 0 to 9
     x = np.arange(10)
 
+<<<<<<< HEAD
+# Save squared number into a file
+with open('squared_numbers.txt', 'w') as file:
+    for i in range(len(x)):
+        file.write(f"{x[i]}**2 = {y[i]}; ")
+=======
     # Create a corresponding array of squares
     y = x ** 2
 
@@ -19,3 +25,4 @@ def main_function():
 if __name__ == "__main__":
     # Call the main function
     main_function()
+>>>>>>> c6de6a88876bad543671e642615866d5efe6e06b
