@@ -1,3 +1,4 @@
+import os
 import torch
 from PIL import Image
 from lavis.models import load_model_and_preprocess
@@ -5,6 +6,8 @@ from lavis.models import load_model_and_preprocess
 
 # setup device to use
 device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
+# Todo: get number from read image
+response_text_frame = 0
 
 
 def get_image():
@@ -20,20 +23,34 @@ def load_model_with_preprocessors(raw_image):
                                                          device=device)
     # prepare the image
     image = vis_processors["eval"](raw_image).unsqueeze(0).to(device)
-    return image
+    return model, image
 
 
-def generate_response(image, output_filename="image_caption.txt"):
-    response_text = model.generate({"image": image, "prompt": "Question: which city is this? Answer:"})
+def generate_response(model, image, output_filename="image_caption.txt"):
+    prompt = "Question: which city is this? Answer:"
+    response_text = model.generate({"image": image, "prompt": prompt})
     # 'singapore'
-
+    return response_text
     # Save the response to a text file
-    with open(output_filename, "w") as file:
+    # with open(output_filename, "w") as file:
+    #     file.write(response_text)
+
+
+def save_response(response_text):
+    global response_text_frame
+    # Get the current working directory
+    current_directory = os.getcwd()
+    # Specify the relative path to the parent directory and format
+    relative_path = "../../responses/response" + f'{response_text_frame:04}' + ".txt"
+    # Construct the full output file path
+    output_file = os.path.join(current_directory, relative_path)
+    # Save the response to a text file
+    with open(output_file, "w") as file:
         file.write(response_text)
+        response_text_frame += 1
 
 
-
-def save_response(output_filename="response.txt"):
+def generate_response2(model, image, output_filename="response.txt"):
     # Define device here
     device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 
@@ -49,7 +66,8 @@ def save_response(output_filename="response.txt"):
 
     # 'singapore'
 
-def explain_answer():
+
+def explain_answer(model, image):
     model.generate({
         "image": image,
         "prompt": "Question: which city is this? Answer: singapore. Question: why?"})
@@ -59,9 +77,9 @@ def explain_answer():
 def main():
     print("starting with the program")
     raw_image = get_image()
-    image = load_model_with_preprocessors(raw_image)
-    generate_response()
-    save_response()
+    model, image = load_model_with_preprocessors(raw_image)
+    response_text = generate_response(model, image)
+    save_response(response_text)
     # explain_answer()
     pass
 
