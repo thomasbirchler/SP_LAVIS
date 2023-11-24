@@ -1,4 +1,5 @@
 import os
+
 import torch
 from PIL import Image
 from lavis.models import load_model_and_preprocess
@@ -12,7 +13,8 @@ response_text_frame = 0
 
 def get_image():
     # load sample image
-    raw_image = Image.open("../../docs/_static/merlion.png").convert("RGB")
+    # raw_image = Image.open("../../docs/_static/merlion.png").convert("RGB")
+    raw_image = Image.open("../../frames/frame0007.jpg").convert("RGB")
     # display(raw_image.resize((596, 437)))
     return raw_image
 
@@ -27,7 +29,7 @@ def load_model_with_preprocessors(raw_image):
 
 
 def generate_response(model, image, output_filename="image_caption.txt"):
-    prompt = "Question: which city is this? Answer:"
+    prompt = "Question: what can you see in the image? Answer:"
     response_text = model.generate({"image": image, "prompt": prompt})
     # 'singapore'
     return response_text
@@ -46,7 +48,7 @@ def save_response(response_text):
     output_file = os.path.join(current_directory, relative_path)
     # Save the response to a text file
     with open(output_file, "w") as file:
-        file.write(response_text)
+        file.write(response_text[0])
         response_text_frame += 1
 
 
@@ -78,8 +80,11 @@ def main():
     print("starting with the program")
     raw_image = get_image()
     model, image = load_model_with_preprocessors(raw_image)
-    response_text = generate_response(model, image)
-    save_response(response_text)
+    while True:
+        response_text = generate_response(model, image)
+        # response_text = "a man on a unicycle"
+        save_response(response_text)
+
     # explain_answer()
     pass
 
