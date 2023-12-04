@@ -16,6 +16,7 @@ def get_image():
     # raw_image = Image.open("../../docs/_static/merlion.png").convert("RGB")
     raw_image = Image.open("../../frames/frame0007.jpg").convert("RGB")
     # display(raw_image.resize((596, 437)))
+
     return raw_image
 
 
@@ -83,6 +84,10 @@ def main():
     while True:
         response_text = generate_response(model, image)
         # response_text = "a man on a unicycle"
+
+
+
+
         save_response(response_text)
 
     # explain_answer()
