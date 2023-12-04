@@ -19,7 +19,6 @@ def get_image(image_index):
                     image_left = Image.open(image_filename+f'{direction[0]}.jpg')
                     image_front = Image.open(image_filename+f'{direction[1]}.jpg')
                     image_right = Image.open(image_filename+f'{direction[2]}.jpg')
-                    image_index += 1
                     return image_left, image_front, image_right, image_index
 
 
@@ -33,7 +32,7 @@ def load_model_with_preprocessors():
 def generate_caption(model, image):
     prompt = "Question: Describe everything in this picture. Answer:"
     response_text = model.generate({"image": image, "prompt": prompt})
-    return response_text
+    return response_text[0]
 
 
 def save_caption(caption, index, direction="left"):
@@ -63,6 +62,7 @@ def main():
         caption = generate_caption(model, image_left)
         print("before save_caption")
         save_caption(caption, index)
+        index += 1
 
 
 if __name__ == "__main__":
