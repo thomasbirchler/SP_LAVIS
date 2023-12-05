@@ -72,6 +72,9 @@ def main():
                 raw_image = get_image(index, direction)
                 print(f'got raw image{index}_{direction}')
                 image = vis_processors["eval"](raw_image).unsqueeze(0).to(device)
+
+
+
                 print(f"Starting caption generation for frame{index}_{direction}.")
                 caption = generate_caption(model, image, prompts[prompt_number])
                 save_caption(caption, index, direction, prompt_number)
