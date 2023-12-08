@@ -85,9 +85,6 @@ def main():
         response_text = generate_response(model, image)
         # response_text = "a man on a unicycle"
 
-
-
-
         save_response(response_text)
 
     # explain_answer()
