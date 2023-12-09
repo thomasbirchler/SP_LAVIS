@@ -1,5 +1,6 @@
 import os
 import socket
+import time
 
 import torch
 from PIL import Image
@@ -9,7 +10,8 @@ from lavis.models import load_model_and_preprocess
 device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 
 # set different prompts for testing
-prompts = ["Question: Describe the image in detail.",
+prompts = ["In which direction is the fridge? Answer with left, front or right."
+            "Question: Describe the image in detail.",
            "Question: What is visible in the image.",
            "Command: Describe the image in detail.",
            "Describe the image in detail.",
@@ -39,7 +41,7 @@ def setup_socket():
     return client_socket
 
 
-def receive_and_save_from_socket(client_socket):
+def receive_data_from_socket(client_socket):
     while True:
         file_data = b''
         file_name = b''
@@ -76,21 +78,24 @@ def receive_and_save_from_socket(client_socket):
                     print(f"Text file {file_name} saved.")
                     return
 
-            # elif file_extension in ('jpg', 'jpeg'):
-            #     Receive the entire image as a single block of binary data
-                # image_data = b""
-                # while True:
-                #     chunk = client_socket.recv(1024)
-                #     if not chunk:
-                #         break
-                #     image_data += chunk
-                #     if data == b'FILE_END':
-                #         break
-                # Write the entire binary image data to the file
-                # file.write(image_data)
-                # print(f"Image file {file_name} saved.")
-            # else:
-            #     print(f"Unsupported file extension: {file_extension}")
+
+def send_data_to_socket(frame, direction, client_socket, prompt_number="9"):
+    file_name = f"caption{frame:04}_{direction}_prompt{prompt_number}.txt"
+    file_path = "../../output/" + file_name
+    # Send the filename first
+    client_socket.send(file_name.encode("utf-8"))
+
+    # Send a delimiter to separate filename and content
+    client_socket.send(b'\0')
+    with open(file_path, 'rb') as text_file:
+        # Send file in batches
+        text_data = text_file.read(1024)
+        while text_data:
+            client_socket.send(text_data)
+            text_data = text_file.read(1024)
+    # Send a marker to indicate the end of the file
+    client_socket.send(b'FILE_END')
+    print(f"File {file_name} sent.")
 
 
 def get_image(image_index, direction):
@@ -135,24 +140,29 @@ def save_caption(caption, index, direction, prompt_number):
 
 def main():
     index = 0
+    # model, vis_processors = load_model_with_preprocessors()
+    # print("Model loaded.")
     client_socket = setup_socket()
     while True:
         print("Waiting for new input.")
-        receive_and_save_from_socket(client_socket)
+        for i in range(6):
+            receive_data_from_socket(client_socket)
+        # for direction in directions:
+            # print(f'index: {index}, direction: {direction}')
+            # raw_image = get_image(index, direction)
+            # print(f'got raw image{index}_{direction}')
+            # image = vis_processors["eval"](raw_image).unsqueeze(0).to(device)
+            # print(f"Starting caption generation for frame{index}_{direction}.")
+            # caption = generate_caption(model, image, prompts[0])
+            # save_caption(caption, index, direction, "9")
 
-    # model, vis_processors = load_model_with_preprocessors()
-    # print("Model loaded.")
+        for i in range(3):
+            send_data_to_socket(index, directions[i], client_socket)
+            time.sleep(0.5)
+        index += 1
+
     # for prompt_number in range(len(prompts)):
     #     for index in range(4):
-    #         for direction in directions:
-    #             print(f'index: {index}, direction: {directions[0]}')
-    #             raw_image = get_image(index, direction)
-    #             print(f'got raw image{index}_{direction}')
-    # image = vis_processors["eval"](raw_image).unsqueeze(0).to(device)
-
-    # print(f"Starting caption generation for frame{index}_{direction}.")
-    # caption = generate_caption(model, image, prompts[prompt_number])
-    # save_caption(caption, index, direction, prompt_number)
 
 
 if __name__ == "__main__":
